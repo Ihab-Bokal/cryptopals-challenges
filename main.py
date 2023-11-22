@@ -27,10 +27,13 @@ def fixed_xor(string1: str, string2: str):
         if string1[i] == string2[i]:
             result += "0"
         else:
-            digit = int(hex_to_dec(string1[i]) + hex_to_dec(string2[i])) % 16
+            if int(hex_to_dec(string2[i])) % 2 == 0:
+                digit = (int(hex_to_dec(string1[i])) + int(hex_to_dec(string2[i]))) % 16
+            else:
+                digit = (int(hex_to_dec(string2[i])) - int(hex_to_dec(string1[i]))) % 16
             digit = dec_to_hex(str(digit))
-            print(digit)
             result += digit
+
     print(result)
     return result
 
@@ -51,16 +54,15 @@ def max_power(dec_value):
     i = 0
     while 16 ** i < dec_value:
         i += 1
-    return i-1
+    return i - 1
 
 
 def list_to_string(mylist):
     mystring = ""
-    for i in range(1, len(mylist)+1):
-        mystring += hex_digits[mylist[i-1]]
+    for i in range(1, len(mylist) + 1):
+        mystring += hex_digits[mylist[i - 1]]
     return mystring
 
 
 fixed_xor("1c0111001f010100061a024b53535009181c", "686974207468652062756c6c277320657965")
 print("746865206b696420646f6e277420706c6179")
-
