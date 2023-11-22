@@ -1,8 +1,15 @@
-base64_digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+#                                                                Fixed XOR
+# Write a function that takes two equal-length buffers and produces their XOR combination.
+# If your function works properly, then when you feed it the string:
+# 1c0111001f010100061a024b53535009181c
+# ... after hex decoding, and when XOR'd against:
+# 686974207468652062756c6c277320657965
+# ... should produce:
+# 746865206b696420646f6e277420706c6179
+hex_digits = "0123456789abcdef"
 
 
 def hex_to_dec(hex_value):
-    hex_digits = "0123456789abcdef"
     decimal_value = 0
     for i in range(len(hex_value)):
         # Fixed bug here, I was reading the numbers from left to right, right being coefficients for higher powers
@@ -10,24 +17,39 @@ def hex_to_dec(hex_value):
     return str(decimal_value)
 
 
-def dec_to_base64(dec_value):
-    """
-    I am going to feed the digits into this list, but it's going to be in a reversed order meaning from coefficient of
-    biggest power to that of the smallest
-    """
-    base64_values_queue = list()
+def fixed_xor(string1: str, string2: str):
+    result = ""
+    len1 = len(string1)
+    if len(string1) != len(string2):
+        return result
+
+    for i in range(len1):
+        if string1[i] == string2[i]:
+            result += "0"
+        else:
+            digit = int(hex_to_dec(string1[i]) + hex_to_dec(string2[i])) % 16
+            digit = dec_to_hex(str(digit))
+            print(digit)
+            result += digit
+    print(result)
+    return result
+
+
+def dec_to_hex(dec_value):
+    # dec_value is a string
+    hex_values_list = list()
     decimal_v: int = int(dec_value)
     for i in range(max_power(decimal_v), 0, -1):
-        coefficient = decimal_v // (64 ** i)
-        base64_values_queue.append(coefficient)
-        decimal_v -= (64 ** i) * coefficient
-    base64_values_queue.append(decimal_v)
-    return list_to_string(base64_values_queue)
+        coefficient = decimal_v // (16 ** i)
+        hex_values_list.append(coefficient)
+        decimal_v -= (16 ** i) * coefficient
+    hex_values_list.append(decimal_v)
+    return list_to_string(hex_values_list)
 
 
 def max_power(dec_value):
     i = 0
-    while 64 ** i < dec_value:
+    while 16 ** i < dec_value:
         i += 1
     return i-1
 
@@ -35,9 +57,10 @@ def max_power(dec_value):
 def list_to_string(mylist):
     mystring = ""
     for i in range(1, len(mylist)+1):
-        mystring += base64_digits[mylist[i-1]]
+        mystring += hex_digits[mylist[i-1]]
     return mystring
 
 
-print(dec_to_base64(hex_to_dec("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")))
-print("SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t")
+fixed_xor("1c0111001f010100061a024b53535009181c", "686974207468652062756c6c277320657965")
+print("746865206b696420646f6e277420706c6179")
+
