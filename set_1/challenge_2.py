@@ -47,8 +47,7 @@ def fixed_xor(hex1: str, hex2: str):
         for i in range(len(binary1)):
             res = (int(binary2[i]) + int(binary1[i])) % 2
             result += str(res)
-    print(binary_to_hexadecimal(result))
-    return result
+    return binary_to_hexadecimal(result)
 
 
 fixed_xor("1c0111001f010100061a024b53535009181c", "686974207468652062756c6c277320657965")
