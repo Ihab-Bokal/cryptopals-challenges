@@ -9,4 +9,4 @@ def xor_buffers(buf1, buf2):
     return bytes(result)
 
 
-print(xor_buffers(buffer1, buffer2).hex())
+xor_buffers(buffer1, buffer2).hex()
