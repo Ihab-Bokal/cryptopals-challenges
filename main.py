@@ -6,12 +6,13 @@ After some research I have figured out the following:
 -
 
 """
-# from chal2_solution import *
+from set_1 import chal2_solution as c
 from codecs import decode
 
 # Ciphertext we need to decrypt
 buffer = decode(b"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736", "hex_codec")
 char_freq = "etaoinshrdlu"
+one_byte_chars = "!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 
 
 def scorer(result: str) -> int:
@@ -33,4 +34,15 @@ def scorer(result: str) -> int:
     return score
 
 
-print(scorer("eaat"))
+def decoder(inp: bytes) -> str:
+    result = ""
+    for i in one_byte_chars:
+        key = i * 68
+        result = str(c.xor_buffers(key, inp).decode())
+        if scorer(result) > 3:
+            print(i + ": " + result)
+    return result
+
+
+print(decoder(buffer))
+# print(scorer("eaat"))

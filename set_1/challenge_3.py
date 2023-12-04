@@ -6,6 +6,7 @@ After some research I have figured out the following:
 -
 
 """
+from chal2_solution import xor_buffers
 from codecs import decode
 
 # Ciphertext we need to decrypt
