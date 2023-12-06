@@ -1,6 +1,6 @@
 from collections import Counter
 from string import ascii_lowercase, ascii_letters
-from chal2_solution import xor_buffers
+from challenge2_solution import xor_buffers
 from codecs import decode
 
 with open("frankenstein.txt", encoding='utf-8') as f:
@@ -31,6 +31,7 @@ def scorer(plaintext: str) -> float:
             # Sum up the values to each letter to get a final score
             score += letter_freq[letter]
         except KeyError:
+            # Some keys might not be present in the ascii_letters
             continue
     return score
 
@@ -41,7 +42,7 @@ def decoder(ciphertext: bytes) -> str:
     for letter in ascii_letters:
         # Generate a 68 byte long key cast to bytes
         key = bytes(letter * 68, 'utf-8')
-        if scorer(str(xor_buffers(key, ciphertext))) > 1.2:
+        if scorer(str(xor_buffers(key, ciphertext))) > 2.5:
             result = str(xor_buffers(key, ciphertext))
             print(letter, ": ", result)
     return result

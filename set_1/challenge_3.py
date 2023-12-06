@@ -4,7 +4,7 @@ After some research I have figured out the following:
 - By single byte key they meant that the key is of the form "aaa...aaa" or "b....b", it's any character that can be represented
   with 8 bits
 """
-from set_1 import chal2_solution as c
+from set_1 import challenge2_solution as c
 from codecs import decode
 
 # Ciphertext we need to decrypt
