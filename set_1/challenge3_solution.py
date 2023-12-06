@@ -32,7 +32,7 @@ def scorer(plaintext: str) -> float:
             score += letter_freq[letter]
         except KeyError:
             # Some keys might not be present in the ascii_letters
-            continue
+            score -= 0.05
     return score
 
 
@@ -42,10 +42,10 @@ def decoder(ciphertext: bytes) -> str:
     for letter in ascii_letters:
         # Generate a 68 byte long key cast to bytes
         key = bytes(letter * 68, 'utf-8')
-        if scorer(str(xor_buffers(key, ciphertext))) > 2.5:
+        if scorer(str(xor_buffers(key, ciphertext))) > 1:
             result = str(xor_buffers(key, ciphertext))
             print(letter, ": ", result)
     return result
 
 
-print(decoder(buffer))
+# print(decoder(buffer))
