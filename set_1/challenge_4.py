@@ -1,6 +1,4 @@
-from string import ascii_uppercase
-from challenge3_solution import scorer
-from challenge2_solution import xor_buffers
+from challenge3_solution_optimized import crack_xor_cipher
 from codecs import decode
 
 with open("challenge4_ciphertext.txt", encoding='utf-8') as c:
@@ -10,21 +8,19 @@ with open("challenge4_ciphertext.txt", encoding='utf-8') as c:
 # The full buffer's length is 333 * 60. We will go through every single set of 60 characters
 # in the full_decoder function
 full_buffer = decode(ciphertext.hex(), "hex_codec")
-# print full_buffer in its byte format
-# print(full_buffer)
 
 
-def full_decoder(cipher: bytes) -> str:
-    result = ""
+def full_decoder(cipher: bytes) -> tuple[float, bytes, int]:
+    # a tuple containing he score and the according plaintext and the line containing the ciphertext
+    result = (float('inf'), None, 0)
     for i in range(327):
         # Load lines from the encrypted file one after one using get_chars()
         buffer = get_chars(full_buffer[61*i:])
-        for letter in ascii_uppercase:
-            # Generate a 60 byte long key cast to bytes to get the key
-            key = bytes(letter * 60, 'utf-8')
-            if scorer(str(xor_buffers(key, buffer))) > 1:
-                result = str(xor_buffers(key, buffer))
-                print(letter, ": ", result)
+        main_tuple = crack_xor_cipher(buffer)
+        current_result = (main_tuple[0], main_tuple[1], i)
+        # Keep only results with the lowest score
+        if result[0] > current_result[0]:
+            result = current_result
     return result
 
 
@@ -39,14 +35,4 @@ def get_chars(inp: bytes) -> bytes:
     return bytes(output, 'utf-8')[2:]
 
 
-# print(get_chars(full_buffer))
 print(full_decoder(full_buffer))
-"""
-Algorithm:
-- We go through every 60 characters in the file at a time because
-1 character = 1 byte
-2 hex characters = 1 byte
-hence
-60 character string = 120 character hex
-- We evaluate every decoded output and if the score is greater than 1 we print out the key and the decoded string
-"""
