@@ -1,14 +1,10 @@
 from collections import Counter
+from dataclasses import dataclass
 from string import ascii_lowercase
+from typing import Optional
+
 from challenge2_solution import xor_buffers
-from codecs import decode
-
-
-with open("frankenstein.txt", encoding='utf-8') as f:
-    # have the book all in lowercase
-    book = f.read().lower()
-
-buffer = decode(b"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736", "hex_codec")
+from challenge3_solution import book, buffer
 
 
 # A method to get the frequency of each character in the frankenstein book
@@ -25,6 +21,21 @@ def get_frequencies(txt: str, letters: str) -> dict:
 
 # Have a dictionary with the letters as keys and their frequencies as values
 frequencies = get_frequencies(book, ascii_lowercase)
+
+
+@dataclass(order=True)
+class ScoredGuess:
+    score: float = float('inf')
+    key: Optional[int] = None
+    ciphertext: Optional[bytes] = None
+    plaintext: Optional[bytes] = None
+
+    @classmethod
+    def from_key(cls, ctext, key_val):
+        full_key = bytes([key_val]) * len(ctext)
+        ptext = xor_buffers(full_key, ctext)
+        score = score_text(ptext)
+        return cls(score, key_val, ctext, ptext)
 
 
 def score_text(text: bytes) -> float:
@@ -44,10 +55,10 @@ def score_text(text: bytes) -> float:
 
 def crack_xor_cipher(ciphertext: bytes) -> tuple[float, bytes]:
     #  The form of best_guess is (score, plaintext)
-    best_guess = (float('inf'), b"")
+    best_guess = ScoredGuess()
 
-    for i in range(256):
-        key = bytes([i]) * len(ciphertext)
+    for candidate_key in range(256):
+        key = bytes([candidate_key]) * len(ciphertext)
         plaintext = xor_buffers(buffer, key)
         score = score_text(plaintext)
         current_guess = (score, plaintext)
