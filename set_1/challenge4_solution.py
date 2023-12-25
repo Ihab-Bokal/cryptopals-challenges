@@ -1,4 +1,4 @@
-from challenge3_solution_optimized import crack_xor_cipher, score_text, ScoredGuess
+from challenge3_solution_optimized import crack_xor_cipher, ScoredGuess
 from codecs import decode
 
 filename = "challenge4_ciphertext.txt"
