@@ -9,10 +9,12 @@ with open(filename) as file:
 def file_decoder() -> ScoredGuess:
     result = ScoredGuess()
     for line in lines:
+        print(end=".", flush=True)
         cipher = decode(line, "hex")
         actual = crack_xor_cipher(cipher)
         result = min(result, actual)
-        # print(actual)
+    index = lines.index(result.ciphertext.hex())
+    print("\nThe encrypted line's index: " + str(index))
     return result
 
 
