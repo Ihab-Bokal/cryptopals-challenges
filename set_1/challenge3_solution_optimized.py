@@ -39,6 +39,9 @@ class ScoredGuess:
         # we then inject the values we got into the ScoredGuess class' constructor
         return cls(score, key_val, ctext, ptext)
 
+    def get_score(self):
+        return self.score
+
 
 def score_text(text: bytes) -> float:
     # lower scores are better
@@ -55,7 +58,7 @@ def score_text(text: bytes) -> float:
     return score
 
 
-def crack_xor_cipher(ciphertext: bytes) -> tuple[float, bytes]:
+def crack_xor_cipher(ciphertext: bytes) -> ScoredGuess:
     #  The form of best_guess is (score, plaintext)
     best_guess = ScoredGuess()
 
@@ -63,9 +66,6 @@ def crack_xor_cipher(ciphertext: bytes) -> tuple[float, bytes]:
         guess = ScoredGuess.from_key(ciphertext, candidate_key)
         # min(best_guess, guess) compares guesses by score because we passed order=True to the dataclass decorator
         best_guess = min(best_guess, guess)
-
-    if best_guess[1] is None:
-        print("There was an error. The best guess is erroneous.")
     return best_guess
 
 
