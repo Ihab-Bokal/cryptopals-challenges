@@ -1,10 +1,11 @@
 from challenge2_solution import xor_buffers
-from codecs import decode
-from base64 import b64decode, b64encode
+from base64 import b64decode
 
 # The file 6.txt is in base64
-with open("6.txt") as file:
-    ciphertext = bytes(file.read(), 'utf-8')
+with (open("6.txt") as file):
+    b64_ciphertext = bytes(file.read(), 'utf-8')
+    hexed_ciphertext = b64decode(b64_ciphertext).hex()
+    ciphertext = bytes(hexed_ciphertext, 'utf-8')
 
 
 def hamming_distance(first_bytes: bytes, second_bytes: bytes) -> int:
@@ -31,7 +32,7 @@ def hamming_distance(first_bytes: bytes, second_bytes: bytes) -> int:
         """
 
 
-def find_keysize() -> tuple[int, float]:
+def find_keysizes() -> tuple[int, float]:
     # The right keysize, we'll be
     keysize: int = 0
     real_edit_distance: float = float('inf')
@@ -46,21 +47,50 @@ def find_keysize() -> tuple[int, float]:
     return keysize, real_edit_distance
 
 
-# Padding function - For conversion from base64 to bytes
 """
-def pad(bytes_to_pad: bytes) -> bytes:
-    padded_bytes = bytes_to_pad
-    if len(bytes_to_pad) % 3 == 0:
-        return padded_bytes
-    else:
-        padding = len(bytes_to_pad) % 3 + 1
-        # Replaced primitive padding ith builtin zfill()
-        padded_bytes = bytes_to_pad.zfill(padding)
-        return padded_bytes
+def find_keysize(candidates: list[int]) -> int:
+    # c for candidate
+    final_keysize: int = 0
+    keysize_blocks: list
+    for c in candidates:
+        # Define the blocks of bytes that will
+        keysize_blocks = [
+            ciphertext[: c],
+            ciphertext[c: c*2],
+            ciphertext[c*2: c*3],
+            ciphertext[c*3: c*4]
+        ]
+    return 0
 """
+
+
+def break_into_blocks(keysize: int, ct: bytes) -> list[bytes]:
+    # In order not to get an index out of range error
+    pseudo_length = (len(ct) - (len(ct) % keysize)) // keysize
+    keysize_blocks: list[bytes] = []
+    for i in range(pseudo_length):
+        keysize_blocks.append(ct[keysize * i: keysize * (i+1)])
+    print(keysize_blocks)
+    return keysize_blocks
+
+
+def transpose_blocks(blocks: list[bytes]) -> list[bytes]:
+    transposed_blocks: list[bytes] = []
+    block_len: int = len(blocks[0])
+    list_len: int = len(blocks)
+    new_block: bytes = b""
+    for block_parser in range(block_len):
+        for list_parser in range(list_len):
+            letter_byte: bytes = bytes([blocks[list_parser][block_parser]])
+            new_block += letter_byte
+        transposed_blocks.append(new_block)
+        new_block = b""
+    return transposed_blocks
 
 
 if __name__ == "__main__":
-    # print(hamming_distance(b"wokka wokka!!!", b"this is a test")) :: Returns 37, correct answer
-    print(find_keysize())
+    # print(hamming_distance(b"wokka wokka!!!", b"this is a test")) # Returns 37, correct answer
+    print(find_keysizes())
+    cipher_blocks = break_into_blocks(10, ciphertext)
+    print(transpose_blocks(cipher_blocks))
 
