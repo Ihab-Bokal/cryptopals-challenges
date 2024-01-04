@@ -23,16 +23,44 @@ def hamming_distance(first_bytes: bytes, second_bytes: bytes) -> int:
     return hamming_dist
 
 
-def find_keysize():
-    for KEYSIZE in range(2, 41):
-        print("first KEYSIZE worth of bytes: " + b64decode(ciphertext[:KEYSIZE*12]).hex())
-        print("second KEYSIZE worth of bytes: " + b64decode(ciphertext[KEYSIZE*12:KEYSIZE*24]).hex())
-        if KEYSIZE == 4:
-            break
-    return 0
+"""------------------ STEPS ------------------
+            Take first and second KEYSIZE worth of bytes
+            --skip this step for now: decode them to simple bytes
+            Get the hamming distance between them 
+            If the hamming distance is inferior to the current keysize
+        """
+
+
+def find_keysize() -> tuple[int, float]:
+    # The right keysize, we'll be
+    keysize: int = 0
+    real_edit_distance: float = float('inf')
+    for POTENTIAL_KEYSIZE in range(2, 41):
+        first_bytes = ciphertext[: POTENTIAL_KEYSIZE]
+        second_bytes = ciphertext[POTENTIAL_KEYSIZE: POTENTIAL_KEYSIZE * 2]
+        #  Normalize the result by dividing the hamming distance by the POTENTIAL_KEYSIZE
+        edit_distance = hamming_distance(first_bytes, second_bytes) / POTENTIAL_KEYSIZE
+        if real_edit_distance > edit_distance:
+            keysize = POTENTIAL_KEYSIZE
+            real_edit_distance = edit_distance
+    return keysize, real_edit_distance
+
+
+# Padding function - For conversion from base64 to bytes
+"""
+def pad(bytes_to_pad: bytes) -> bytes:
+    padded_bytes = bytes_to_pad
+    if len(bytes_to_pad) % 3 == 0:
+        return padded_bytes
+    else:
+        padding = len(bytes_to_pad) % 3 + 1
+        # Replaced primitive padding ith builtin zfill()
+        padded_bytes = bytes_to_pad.zfill(padding)
+        return padded_bytes
+"""
 
 
 if __name__ == "__main__":
-    print(hamming_distance(b"wokka wokka!!!", b"this is a test"))
-    find_keysize()
+    # print(hamming_distance(b"wokka wokka!!!", b"this is a test")) :: Returns 37, correct answer
+    print(find_keysize())
 
