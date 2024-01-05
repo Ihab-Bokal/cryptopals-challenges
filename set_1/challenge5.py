@@ -9,10 +9,10 @@ email = b"bokalihab@gmail.com"
 password = b"password123_will_never_be_my_passwd"
 
 
-def generate_key(length: int) -> bytes:
-    ice = b"ICE"
+def generate_key(length: int, key: bytes) -> bytes:
+    ice = key
     key: bytes
-    root_key = b"ICE" * (length//3)
+    root_key = key * (length//3)
     key = root_key + ice[:length % 3]
     return key
 
@@ -20,7 +20,7 @@ def generate_key(length: int) -> bytes:
 def ice_encryption(pt: bytes) -> str:
     # pt here stands for plaintext
     length = len(pt)
-    key = generate_key(length)
+    key = generate_key(length, b"ICE")
     ciphertext = xor_buffers(key, pt)
     return ciphertext.hex()
 

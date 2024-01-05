@@ -3,7 +3,7 @@ from codecs import decode
 
 filename = "challenge4_ciphertext.txt"
 with open(filename) as file:
-    lines = [line.rstrip() for line in file]
+    lines: list[str] = [line.rstrip() for line in file]
 
 
 def file_decoder() -> ScoredGuess:

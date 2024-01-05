@@ -1,11 +1,12 @@
 from challenge2_solution import xor_buffers
 from base64 import b64decode
+from challenge3_solution_optimized import crack_xor_cipher
+
 
 # The file 6.txt is in base64
-with (open("6.txt") as file):
-    b64_ciphertext = bytes(file.read(), 'utf-8')
-    hexed_ciphertext = b64decode(b64_ciphertext).hex()
-    ciphertext = bytes(hexed_ciphertext, 'utf-8')
+with open("6.txt", "r") as file:
+    encoded_text = file.read().replace('\n', '')
+    ciphertext = b64decode(encoded_text)
 
 
 def hamming_distance(first_bytes: bytes, second_bytes: bytes) -> int:
@@ -25,11 +26,11 @@ def hamming_distance(first_bytes: bytes, second_bytes: bytes) -> int:
 
 
 """------------------ STEPS ------------------
-            Take first and second KEYSIZE worth of bytes
-            --skip this step for now: decode them to simple bytes
-            Get the hamming distance between them 
-            If the hamming distance is inferior to the current keysize
-        """
+    Take first and second KEYSIZE worth of bytes
+    --skip this step for now: decode them to simple bytes
+    Get the hamming distance between them 
+    If the hamming distance is inferior to the current keysize
+"""
 
 
 def find_keysizes() -> tuple[int, float]:
@@ -41,6 +42,7 @@ def find_keysizes() -> tuple[int, float]:
         second_bytes = ciphertext[POTENTIAL_KEYSIZE: POTENTIAL_KEYSIZE * 2]
         #  Normalize the result by dividing the hamming distance by the POTENTIAL_KEYSIZE
         edit_distance = hamming_distance(first_bytes, second_bytes) / POTENTIAL_KEYSIZE
+        print(POTENTIAL_KEYSIZE, ": ", edit_distance)
         if real_edit_distance > edit_distance:
             keysize = POTENTIAL_KEYSIZE
             real_edit_distance = edit_distance
@@ -68,13 +70,15 @@ def break_into_blocks(keysize: int, ct: bytes) -> list[bytes]:
     # In order not to get an index out of range error
     pseudo_length = (len(ct) - (len(ct) % keysize)) // keysize
     keysize_blocks: list[bytes] = []
+
     for i in range(pseudo_length):
         keysize_blocks.append(ct[keysize * i: keysize * (i+1)])
-    print(keysize_blocks)
+
     return keysize_blocks
 
 
 def transpose_blocks(blocks: list[bytes]) -> list[bytes]:
+    # My ego went ^^ cos this worked from the first try
     transposed_blocks: list[bytes] = []
     block_len: int = len(blocks[0])
     list_len: int = len(blocks)
@@ -88,9 +92,20 @@ def transpose_blocks(blocks: list[bytes]) -> list[bytes]:
     return transposed_blocks
 
 
+def find_key(final_blocks: list[bytes]) -> bytes:
+    key_list: list[bytes] = []
+    for list_index in range(len(final_blocks)):
+        cipher = final_blocks[list_index]
+        current_guess = crack_xor_cipher(cipher)
+        key_list.append(bytes([current_guess.key]))
+
+    key = b"".join(key_list)
+    return key
+
+
 if __name__ == "__main__":
     # print(hamming_distance(b"wokka wokka!!!", b"this is a test")) # Returns 37, correct answer
-    print(find_keysizes())
-    cipher_blocks = break_into_blocks(10, ciphertext)
-    print(transpose_blocks(cipher_blocks))
-
+    # print(find_keysizes()) # 2,3 and 5 are the 3 key sizes with the smaller hamming distance
+    cipher_blocks = break_into_blocks(5, ciphertext)
+    fin_blocks = transpose_blocks(cipher_blocks)
+    print(find_key(fin_blocks))
