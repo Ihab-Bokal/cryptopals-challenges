@@ -123,5 +123,8 @@ if __name__ == "__main__":
 The find_keysizes() method is not accurate. I tried brute-forcing the keysize with a  for loop 
 To my surprise I discovered that every other function was correct except for find_keysizes()
 the keysize is 29 and the key is: b'Terminator X: Bring the noise'.
-I need to debug the code as to make find_keysizes() correct
+I need to debug the code as to make find_keysizes() correct.
+
+To get the correct KEYSIZE I should have tried to get the Hamming distance
+for 4 KEYSIZE blocks and averaged the distances.
 """
