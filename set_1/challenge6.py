@@ -1,12 +1,13 @@
-from challenge2_solution import xor_buffers
 from base64 import b64decode
 from challenge3_solution_optimized import crack_xor_cipher
+from challenge5 import generate_key
+from challenge2_solution import xor_buffers
 
 
 # The file 6.txt is in base64
 with open("6.txt", "r") as file:
     encoded_text = file.read().replace('\n', '')
-    ciphertext = b64decode(encoded_text)
+    ciphered_file = b64decode(encoded_text)
 
 
 def hamming_distance(first_bytes: bytes, second_bytes: bytes) -> int:
@@ -38,11 +39,10 @@ def find_keysizes() -> tuple[int, float]:
     keysize: int = 0
     real_edit_distance: float = float('inf')
     for POTENTIAL_KEYSIZE in range(2, 41):
-        first_bytes = ciphertext[: POTENTIAL_KEYSIZE]
-        second_bytes = ciphertext[POTENTIAL_KEYSIZE: POTENTIAL_KEYSIZE * 2]
+        first_bytes = ciphered_file[: POTENTIAL_KEYSIZE]
+        second_bytes = ciphered_file[POTENTIAL_KEYSIZE: POTENTIAL_KEYSIZE * 2]
         #  Normalize the result by dividing the hamming distance by the POTENTIAL_KEYSIZE
         edit_distance = hamming_distance(first_bytes, second_bytes) / POTENTIAL_KEYSIZE
-        print(POTENTIAL_KEYSIZE, ": ", edit_distance)
         if real_edit_distance > edit_distance:
             keysize = POTENTIAL_KEYSIZE
             real_edit_distance = edit_distance
@@ -103,9 +103,25 @@ def find_key(final_blocks: list[bytes]) -> bytes:
     return key
 
 
+def break_repkey_xor(key: bytes, cipher_text: bytes) -> bytes:
+    ct = cipher_text
+    repeating_key = generate_key(len(ct), key)
+    plaintext = xor_buffers(cipher_text, repeating_key)
+    return plaintext
+
+
 if __name__ == "__main__":
     # print(hamming_distance(b"wokka wokka!!!", b"this is a test")) # Returns 37, correct answer
     # print(find_keysizes()) # 2,3 and 5 are the 3 key sizes with the smaller hamming distance
-    cipher_blocks = break_into_blocks(5, ciphertext)
+    cipher_blocks = break_into_blocks(29, ciphered_file)
     fin_blocks = transpose_blocks(cipher_blocks)
-    print(find_key(fin_blocks))
+    myKey = find_key(fin_blocks)
+    pt = break_repkey_xor(myKey, ciphered_file)
+    print(pt)
+
+"""
+The find_keysizes() method is not accurate. I tried brute-forcing the keysize with a  for loop 
+To my surprise I discovered that every other function was correct except for find_keysizes()
+the keysize is 29 and the key is: b'Terminator X: Bring the noise'.
+I need to debug the code as to make find_keysizes() correct
+"""
