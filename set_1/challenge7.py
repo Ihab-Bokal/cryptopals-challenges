@@ -1,7 +1,6 @@
 from base64 import b64decode
 from challenge2_solution import xor_buffers
 
-
 # 7.txt has been b64 encoded and encrypted with AES-128 in ECB mode under the key "YELLOW SUBMARINE"
 with open("7.txt", "r") as file:
     encoded_text = file.read().replace('\n', '')
