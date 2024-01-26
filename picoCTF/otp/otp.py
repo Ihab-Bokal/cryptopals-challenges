@@ -22,6 +22,7 @@ def startup(key_location):
 
 	return key_location
 
+
 def encrypt(key_location):
 	ui = input("What data would you like to encrypt? ").rstrip()
 	if len(ui) == 0 or len(ui) > KEY_LEN:
