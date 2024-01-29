@@ -10,7 +10,7 @@ def aes_ecb_dec(key: bytes, ciphertext: bytes) -> bytes:
 
 if __name__ == "__main__":
     enc_key = b"YELLOW SUBMARINE"
-    pt = aes_ecb_dec(enc_key, ciphered_file)
+    pt = aes_ecb_dec(enc_key, b"*\x18\xdaC\x00X\xc5\x9a9\xf8\xfb\xa6?\xe2\xbe\x01")
     print(pt)
 
 
