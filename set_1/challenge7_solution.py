@@ -1,5 +1,4 @@
 from Crypto.Cipher import AES
-from challenge7 import ciphered_file
 
 
 def aes_ecb_dec(key: bytes, ciphertext: bytes) -> bytes:
