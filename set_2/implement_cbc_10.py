@@ -4,7 +4,7 @@ from pkcs7_09 import pkcs7
 from set_1.challenge7_solution import aes_ecb_dec
 from base64 import b64decode
 
-iv = b"fake 0th ciphert"
+iv = b"fake 0th ciphertext block"
 
 
 def aes_ecb_enc(key: bytes, plaintext: bytes) -> bytes:
