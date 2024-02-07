@@ -1,7 +1,7 @@
-from implement_cbc_10 import aes_cbc_enc, aes_ecb_enc
+from implement_cbc_10 import aes_cbc_enc, aes_ecb_enc, aes_ecb_dec
 from random import randbytes, randint
 from pkcs7_09 import pkcs7
-
+from os import urandom
 
 """
 Now that you have ECB and CBC working:
@@ -21,9 +21,14 @@ block box that might be encrypting ECB or CBC, tells you which one is happening.
 """
 
 
-def gen_bytes(key_len: int) -> bytes:
+def gen_bytes(bytes_len: int) -> bytes:
     # Generate a key that is key_len bytes long
-    key: bytes = randbytes(key_len)
+    key: bytes = randbytes(bytes_len)
+    return key
+
+
+def gen_key(key_len: int) -> bytes:
+    key: bytes = urandom(key_len)
     return key
 
 
@@ -33,27 +38,37 @@ def append(plaintext: bytes) -> bytes:
     return plaintext
 
 
-def encryption_oracle(pt: bytes) -> bytes:
+def encryption_oracle(pt: bytes) -> tuple[bytes, bytes]:
     ct: bytes = b""
     # Generate random key
-    key: bytes = gen_bytes(16)
+    key: bytes = gen_key(16)
     # Pad the plaintext so it is divisible by 16
     pt = append(pt)
     pt = pkcs7(pt, len(pt) + len(pt) % 16)
+    # The global key will enable us to decrypt the ct. Contains the index of the block and its AES encryption mode
+    enc_modes: dict[int, bytes] = {}
 
     for i in range(len(pt) // 16):
-        print(i)
         enc_algo: int = randint(1, 2)
         if enc_algo == 1:
             # Encrypt in ECB mode
             ct += aes_ecb_enc(key, pt[16*i: 16*(i+1)])
+            enc_modes[i] = b"ECB"
         else:
             # Encrypt in CBC mode, and generate random IV
             iv: bytes = gen_bytes(16)
             ct += aes_cbc_enc(key, pt[16*i: 16*(i+1)], iv)
+            enc_modes[i] = b"CBC"
 
-    return ct
+    print(enc_modes)
+    return ct, key
+
+
+def detect_enc_mode(ct_block: bytes, key: bytes) -> bytes:
+    print(aes_ecb_dec(ct_block, key))
+    return b"ECB"
 
 
 if __name__ == "__main__":
-    print(encryption_oracle(b"testing this shit"))
+    ciphrat, schlussel = encryption_oracle(b"testing this shit")
+    print(ciphrat, schlussel)

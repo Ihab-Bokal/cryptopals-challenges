@@ -9,8 +9,8 @@ iv = b"fake 0th ciphertext block"
 
 def aes_ecb_enc(key: bytes, plaintext: bytes) -> bytes:
     # Create an AES object which will encrypt and decrypt the text we provide it with
-    cipher = AES.new(key, AES.MODE_ECB)
-    return cipher.encrypt(plaintext)
+    cipher_ecb = AES.new(key, AES.MODE_ECB)
+    return cipher_ecb.encrypt(plaintext)
 
 
 def aes_cbc_enc(key: bytes, plaintext: bytes, init_v: bytes) -> bytes:
