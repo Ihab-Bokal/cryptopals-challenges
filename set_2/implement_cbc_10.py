@@ -4,7 +4,7 @@ from pkcs7_09 import pkcs7
 from set_1.challenge7_solution import aes_ecb_dec
 from base64 import b64decode
 
-iv = b"fake 0th ciphertext block"
+iv = b"fake 0th ciphert"
 
 
 def aes_ecb_enc(key: bytes, plaintext: bytes) -> bytes:
@@ -15,14 +15,14 @@ def aes_ecb_enc(key: bytes, plaintext: bytes) -> bytes:
 
 def aes_cbc_enc(key: bytes, plaintext: bytes, init_v: bytes) -> bytes:
     ct: bytes = b""
-    cipher_to_xor: bytes = init_v[:16]
+    cipher_to_xor: bytes = init_v
     # Pad the plaintext so it is divisible by 16
     plaintext = pkcs7(plaintext, len(plaintext) + len(plaintext) % 16)
     for i in range(len(plaintext) // 16):
         # XOR with previous ciphered block
         xored_pt: bytes = xor_buffers(cipher_to_xor, plaintext[16*i: 16*(i+1)])
         # Encrypt using the ECB method
-        cipher_to_xor += aes_ecb_enc(key, xored_pt)
+        cipher_to_xor = aes_ecb_enc(key, xored_pt)
         ct += aes_ecb_enc(key, xored_pt)
     return ct
 
@@ -53,5 +53,5 @@ if __name__ == "__main__":
     ciphrat: bytes = aes_cbc_enc(enc_key, b"plaintext something to test stuff yeah man, life be hitin real good these days", iv)
     print(aes_cbc_dec(enc_key, ciphrat, iv))
     cipher: bytes = b64decode(cf)
-    print(aes_cbc_dec(enc_key, cipher, bytes([0]*16)))
+    # print(aes_cbc_dec(enc_key, cipher, bytes([0]*16)))
     # print(bytes([0]*16))
