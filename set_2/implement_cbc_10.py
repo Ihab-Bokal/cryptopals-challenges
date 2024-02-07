@@ -27,7 +27,6 @@ def aes_cbc_enc(key: bytes, plaintext: bytes) -> bytes:
 
 
 # -------------------------- Now write code that will decrypt the file 10.txt --------------------------
-
 with open("10.txt", "r") as file:
     # cf stands for ciphered file
     cf = bytes(file.read(), 'utf-8')
@@ -48,8 +47,25 @@ def aes_cbc_dec(key: bytes, ciphertext: bytes, init_v: bytes) -> bytes:
     return pt
 
 
+def aes_cbc_dec_gpt(key: bytes, ciphertext: bytes, init_v: bytes) -> bytes:
+    cipher_to_xor: bytes = init_v
+    pt: bytes = b""
+    for i in range(len(ciphertext) // 16):
+        # Decrypt the AES ECB block
+        decrypted_block: bytes = aes_ecb_dec(key, ciphertext[16 * i: 16 * (i + 1)])
+        # XOR with the IV (or previous ciphertext block for subsequent blocks)
+        xored_block: bytes = xor_buffers(decrypted_block, cipher_to_xor)
+        # Append the result to the plaintext
+        pt += xored_block
+        # Update the IV for the next iteration
+        cipher_to_xor = ciphertext[16 * i: 16 * (i + 1)]  # Use current ciphertext block instead of next one
+    return pt
+
+
 if __name__ == "__main__":
     enc_key = b"YELLOW SUBMARINE"
-    # print(aes_cbc_enc(enc_key, b"plaintext something to test stuff yeah man, life be hitin real good these days"))
-    print(aes_cbc_dec(enc_key, cf, bytes([0]*16)))
-    print(bytes([0]*16))
+    ciphrat: bytes = aes_cbc_enc(enc_key, b"plaintext something to test stuff yeah man, life be hitin real good these days")
+    print(ciphrat)
+    print(aes_cbc_dec_gpt(enc_key, ciphrat, iv))
+    # print(aes_cbc_dec(enc_key, cf, bytes([0]*16)))
+    # print(bytes([0]*16))
