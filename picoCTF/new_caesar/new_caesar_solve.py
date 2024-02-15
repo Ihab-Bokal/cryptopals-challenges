@@ -1,4 +1,9 @@
 from string import ascii_lowercase
+from base64 import b16decode, b16encode
+
+LOWERCASE_OFFSET = ord("a")
+# lowercase letters from a to p
+ALPHABET = ascii_lowercase[:16]
 
 """
 ciphering reqs:
@@ -13,18 +18,31 @@ Encryption steps:
 2. shift every character in the b16_flag by key[i % len(key)] / i = character's index
 
 CC:
-- I can brute force the key since there are only 16 possibilities
-- I need to unshift the ciphered letter and add it to a variable <- problem here cos of %
+- brute force the key : there are 16 possible values
+- unshift the ciphered letter and add it to a variable
 - That variable should finally be converted from hex to bytes
 """
 
-enc: str = "mlnklfnknljflfjljnjijjmmjkmljnjhmhjgjnjjjmmkjjmijhmkjhjpmkmkmljkjijnjpmhmjjgjj"
+flag: bytes = b"mlnklfnknljflfjljnjijjmmjkmljnjhmhjgjnjjjmmkjjmijhmkjhjpmkmkmljkjijnjpmhmjjgjj"
 
 
-def unshift(cipher: str) -> str:
-
-    return ""
+def unshift(cipher_char: chr, k: chr):
+    # Convert to the index of the ascii_lowercase string
+    t1: int = ord(cipher_char) - LOWERCASE_OFFSET
+    t2: int = ord(k) - LOWERCASE_OFFSET
+    return ALPHABET[(t1 - t2) % len(ALPHABET)]
 
 
 if __name__ == "__main__":
-    print(ascii_lowercase[:16])
+    print("[+] --- Breaking new caesar --- [+]")
+    dec = ""
+
+    for key in ascii_lowercase[:16]:
+        for i, c in enumerate(b16encode(flag)):
+            print(type(c))
+            dec += unshift(c, key)
+
+    b16decode(dec)
+    # for i, c in enumerate(b16):
+    #     enc += shift(c, key[i % len(key)])
+

@@ -68,10 +68,11 @@ def detect_enc_mode(ct_block: bytes, key: bytes) -> bytes:
     # Decrypt the ciphertext against the key in ECB mode
     # Score the resulting text, if it's < 0.5 then the enc is in ECB mode
     # Otherwise the result is gibberish cos it requires an IV or the prev cipher block => CBC mode
+    print(len(key))
     print(aes_ecb_dec(ct_block, key))
     return b"ECB"
 
 
 if __name__ == "__main__":
-    ciphrat, schlussel = encryption_oracle(b"testing this shit")
-    print(ciphrat, schlussel)
+    ciphrat, schlussel = encryption_oracle(b"testing this function")
+    print(ciphrat, "\n", schlussel)
