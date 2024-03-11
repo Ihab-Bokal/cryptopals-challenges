@@ -39,8 +39,9 @@ if __name__ == "__main__":
 
     for key in ascii_lowercase[:16]:
         for i, c in enumerate(b16encode(flag)):
-            print(type(c))
-            dec += unshift(c, key)
+            dec += unshift(chr(c), key)
+        print(dec)
+        dec = ""
 
     b16decode(dec)
     # for i, c in enumerate(b16):
