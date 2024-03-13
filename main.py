@@ -25,16 +25,23 @@ from pwn import xor
 
 if __name__ == "__main__":
     # Replace 'input_file.txt' and 'output_file.txt' with your actual file names
-    key1 = bytes.fromhex("a6c8b6733c9b22de7bc0253266a3867df55acde8635e19c73313")
-    key2 = bytes.fromhex("37dcb292030faa90d07eec17e3b1c6d8daf94c35d4c9191a5e1e")
-    key2 = xor(key2, key1)
-    key3 = bytes.fromhex("c1545756687e7573db23aa1c3452a098b71a7fbf0fddddde5fc1")
-    key3 = xor(key3, key2)
-    flag = bytes.fromhex("04ee9855208a2cd59091d04767ae47963170d1660df7f56f5faf")
+    """cipherflag = bytes.fromhex("73626960647f6b206821204f21254f7d694f7624662065622127234f726927756d")
+    keylen = len(cipherflag)
 
-    flag = xor(key2, key1, key3, flag)
-    print(flag)
+    for i in range(127):
+        flag = xor(cipherflag, bytes([i])*keylen)
+        if flag.count(b"crypto") != 0:
+            print(flag, " : ", i)"""
 
+    """ Repeating key XOR
     
+    cipherflag: bytes = bytes.fromhex("0e0b213f26041e480b26217f27342e175d0e070a3c5b103e2526217f27342e175d0e077e263451150104")
+    flaglen = len(cipherflag)
+    flagFormat = b"crypto{"
 
-
+    print(b"key is : ", xor(flagFormat, cipherflag))
+    key: bytes = b"myXORkey"
+    keylen: int = len(key)
+    key = key * (flaglen // keylen)
+    print(len(key), flaglen)
+    print(b"flag is : ", xor(cipherflag, key))"""
